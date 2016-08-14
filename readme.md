@@ -11,8 +11,13 @@ Lets marketing share links on social networks wih auto post feature
 
 ## Setup project:
 
-* npm install
 
-        change social network token and secret and db url
-* gulp
+
+        * npm install
+
+        *change social network token and secret and db url
+
+## Running project:      
+
+        * gulp
 
