@@ -1,6 +1,7 @@
 var express = require('express');
     mongoose = require('mongoose');
 var schedule = require('node-schedule');
+var dbConfig = require('./config/db');
 var path     = require('path');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
@@ -21,7 +22,8 @@ var twitterController = require('./controllers/twitterController')(Post);
 var smartScheduleController = require('./controllers/smartScheduleController')(SmartSchedule);
 var autopostQueueController = require('./controllers/autopostQueueController')(AutopostQueue);
 
-
+//db
+var db = mongoose.connect(dbConfig.location);
 // serialize and deserialize
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -58,8 +60,7 @@ require('./routes/routes.js')(app, passport); // load our routes and pass in our
 
 
 
-//db
-// var db = mongoose.connect('mongodb://localhost/DB_NAME');
+
 var userRouter = express.Router();
 
 userRouter.route('/Users')
