@@ -1,0 +1,53 @@
+<div class="page-header text-center">
+    <h1 class="text-primary">Profile Page</h1>
+
+    <a href="/sharing" class="btn btn-default btn-sm">Sharing</a>
+    <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+</div>
+
+<div class="row">
+
+    <!-- FACEBOOK INFORMATION -->
+    <div class="col-sm-6">
+        <div class="well">
+            <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+            <div ng-if="user.facebook.token!=''">
+
+                <img src="https://avatars.io/facebook/{{ user.facebook.id }}/140" class="img-circle" width="140" height="=140" ><br>
+            <p>
+                <strong>id</strong>: {{ user.facebook.id }}<br>
+                <strong>token</strong>: {{ user.facebook.token }}<br>
+                <strong>email</strong>: {{ user.facebook.email }}<br>
+                <strong>name</strong>: {{ user.facebook.name }}
+            </p>
+            </div>
+            <div ng-hide="user.facebook.token">
+            <a href="/connect/facebook" target='_self' class="btn btn-primary">Connect Facebook</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <!-- TWITTER INFORMATION -->
+    <div class="col-sm-6">
+        <div class="well">
+            <h3 class="text-info"><span class="fa fa-twitter"></span> Twitter</h3>
+            <div ng-if="user.facebook.token!=''">
+                <img src="https://avatars.io/twitter/{{ user.twitter.username }}/140" class="img-circle" width="140" height="=140"><br>
+            <p>
+                <strong>id</strong>: {{user.twitter.id }}<br>
+                <strong>token</strong>: {{ user.twitter.token }}<br>
+                <strong>username</strong>: {{ user.twitter.username }}<br>
+                <strong>displayName</strong>: {{ user.twitter.displayName }}
+            </p>
+            </div>
+            <div ng-hide="user.facebook.token">
+            <a href="/connect/twitter" target='_self' class="btn btn-info">Connect Twitter</a>
+            </div>
+        </div>
+    </div>
+
+</div>

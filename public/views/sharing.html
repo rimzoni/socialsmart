@@ -1,0 +1,82 @@
+    <div class="page-header text-center">
+        <h1 class="text-primary">Social Sharing</h1>
+        <a href="/profile" class="btn btn-default btn-sm">Profile Page</a>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+    <div class="row">
+        <div class="input-group input-group-lg col-md-8">
+            <input type="text" class="form-control input-lg" ng-model="message" placeholder="What you want to share"  maxlength="{{$scope.twitter==true? 140 :524288}}" >
+            <span class="input-group-addon" ng-hide="charCount">{{ 140 - message.length }}</span>
+            </input>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary btn-lg" ng-click="createPost()">Post</button>
+        </div>
+    </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="alert alert-warning" ng-hide="message_error" role="alert">{{ errors.message }}</div>
+        </div>
+    </div>
+    </br>
+    <div class="container" >
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="row" ng-if="user.facebook.token">
+                    <div class="col-md-1"><h3 class="text-primary"><span class="fa fa-facebook"></span></h3></div>
+                    <div class="col-md-2"><input type="checkbox" ng-model="facebook" ng-change="facebookCheckbox(facebook)" ng-true-value="true" ng-false-value="false"></div>
+                    <div class="col-md-2"><h3 class="text-primary">Facebook</h3></div>
+                </div>
+                <div class="row" ng-hide="user.facebook.token">
+                    <a href="/connect/facebook" target='_self' class="btn btn-primary" ><span class="fa fa-facebook">Connect with Facebook</span></a>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="row" ng-if="user.twitter.token">
+                        <div class="col-md-1"><h3 class="text-primary"><span class="fa fa-twitter"></span></h3></div>
+                        <div class="col-md-2"><input type="checkbox" ng-model="twitter" ng-change="twitterCheckbox(twitter)" ng-true-value="true" ng-false-value="false" ></div>
+                        <div class="col-md-2"><h3 class="text-primary">Twitter</h3></div>
+                    </div>
+                    <div class="row" ng-hide="user.twitter.token">
+                        <a href="/connect/twitter" target='_self' class="btn btn-primary" ><span class="fa fa-twitter">Connect with Twitter</span></a>
+                    </div>
+
+                </div>
+
+
+                <div class="col-sm-3">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="switch">
+                            <input id="cmn-toggle-1" class="cmn-toggle cmn-toggle-round" ng-model="autopost" ng-change="autopostCheckbox(autopost)" ng-true-value="true" ng-false-value="false" type="checkbox">
+                            <label for="cmn-toggle-1" class="text-primary"></label>
+                            </div>
+                         </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2"><h3 class="text-primary">Autopost</h3></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row" ng-hide="post_message">
+                <div class="alert alert-success" >
+                    <h4 class="text-primary">Post "{{posts.post}}" will be posted </h4>
+                    <p ng-hide="schedule_facebook"><span class="fa fa-facebook"> on {{scheduleTimeFacebook.day}} at {{scheduleTimeFacebook.hour}}:{{scheduleTimeFacebook.minutes=='0'?'00':scheduleTimeFacebook.minutes}}</span></p>
+                    <p ng-hide="schedule_twitter"><span class="fa fa-twitter"> on {{scheduleTimeTwitter.day}} at {{scheduleTimeTwitter.hour}}:{{scheduleTimeTwitter.minutes=='0'?'00':scheduleTimeTwitter.minutes}}</span></p>
+                </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="alert alert-warning" ng-hide="checkbox_error" role="alert">{{ errors.checkbox }}</div>
+            </div>
+        </div>
+    </div>
+
+
+
+
