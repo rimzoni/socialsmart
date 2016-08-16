@@ -3,38 +3,122 @@ var smartScheduleController = function(SmartSchedule){
     var resp = [];
     var optimalTimeController = require('./optimalTimeController');
     var OptimalTime = require('../models/optimalTime');
+    var AutopostQueue = require('../models/autopostQueue');
     var post = function(req,res){
         var errors = [];
         var smartSchedule = new SmartSchedule(req.body);
         if(!req.body.network)
             errors.push('Network is required!');
-        if(!req.body.current_day && req.body.current_day!='0')
-            errors.push('Current day is required!');
-        if(!req.body.current_hour && req.body.current_hour!='0')
-            errors.push('Current hour is required!');
-        if(!req.body.minute && req.body.minute!='0')
-            errors.push('Current minute is required!');
+        if(!req.body.date && req.body.date!='0')
+            errors.push('Date  is required!');
 
         if(errors.length>1){
             res.status(400);
             res.send(errors);
         }else{
-
+            req.body.date = new Date(req.body.date);
             var optimaltime = OptimalTime.find({network: smartSchedule.network}, null, {sort: 'day'}).exec();
                 optimaltime.then(function(optimalTimes){
 
-                var response = getPostTime(optimalTimes,req.body.current_day, req.body.current_hour,req.body.current_minute )
-                res.status(200);
-                res.json(response);
+                var response = {};
+                var autopostQueueResult =  AutopostQueue .find({userId: req.body.userId }, null).sort('-date').exec();
+                autopostQueueResult.then(function(queueResults){
+
+                    if(queueResults.length>0){
+                      queueResults.forEach(function (element, index, array) {
+                          var queueResult = element;
+                          var day = req.body.date.getDay();
+                          var hours = req.body.date.getHours();
+                          var minutes = req.body.date.getMinutes();
+                          var month = req.body.date.getMonth();
+                          var monthDay = req.body.date.getDate();
+                          var year = req.body.date.getFullYear();
+
+                          if(queueResult.date >= monthDay && queueResult.month >= month
+                          && queueResult.year >= year){
+
+                            var nextMonthDay = queueResult.date + 1;
+
+                            var safeNextDay = safeIncrementDay(nextMonthDay,  queueResult.month, queueResult.year);
+                             nextMonthDay = safeNextDay.day;
+                             year = safeNextDay.year;
+                             month = safeNextDay.month;
+
+                            var newDate = new Date(year, month, nextMonthDay);
+                            var   newPostTime = getPostTime(optimalTimes,req.body.userId, newDate.toString());
+                            response.year = newPostTime.year;
+                            response.month = newPostTime.month;
+                            response.monthDay = newPostTime.monthDay;
+                            response.day = newPostTime.day;
+                            response.hour = newPostTime.hour;
+                            response.minutes = newPostTime.minutes ;
+                            res.status(200);
+                            res.send(response);
+                          }else{
+
+                            var   postTime = getPostTime(optimalTimes,req.body.userId, req.body.date);
+
+                            var year = postTime.year;
+                            var month = postTime.month;
+                            var monthDay = postTime.monthDay;
+                            var day = postTime.day;
+                            var hour = postTime.hour;
+                            var minutes = postTime.minutes;
+
+                            response.year = year;
+
+                            response.month = month;
+                            response.date= monthDay;
+                            response.day = day;
+                            response.hour = hour;
+                            response.minutes = minutes;
+                            res.status(200);
+                            res.send(response);
+                          }
+                      });
+                    }else{
+
+                      var   postTime = getPostTime(optimalTimes,req.body.userId, req.body.date);
+
+                      var year = postTime.year;
+                      var month = postTime.month;
+                      var monthDay = postTime.monthDay;
+                      var day = postTime.day;
+                      var hour = postTime.hour;
+                      var minutes = postTime.minutes;
+
+                      response.year = year;
+
+                      response.month = month;
+                      response.date= monthDay;
+                      response.day = day;
+                      response.hour = hour;
+                      response.minutes = minutes;
+
+                      res.status(200);
+                      res.send(response);
+
+                    }
+                    res.status(200);
+                    res.send(response);
+                });
             });
 
 
         }
     }
 
-    var getPostTime = function(optimalTimes, req_current_day, req_current_hour, req_current_minute){
-              if (optimalTimes) {
+    var getPostTime = function(optimalTimes, userId,date){
+              date = new Date(date);
 
+              if (optimalTimes) {
+                 var req_current_day = date.getDay();
+                 var req_current_hour = date.getHours();
+                 var req_current_minute = date.getMinutes();
+
+                 var req_current_month = date.getMonth();
+                 var req_current_date = date.getDate();
+                 var req_current_year = date.getFullYear();
                 //take day and hour and duration
                 var returnOptimalTimes = [];
                 var generalTimes = [];
@@ -50,7 +134,6 @@ var smartScheduleController = function(SmartSchedule){
 
                         var generalPeakHour = getGeneralPeakHour(generalTimes, req_current_hour);
                         if (isCurrentHourPeak(optimalTime.hour, optimalTime.duration, req_current_hour)) {
-
                             returnOptimalTimes.push(optimalTime);
                         } else if (generalPeakHour.length > 0) {
                             returnOptimalTimes.push(generalPeakHour)
@@ -78,29 +161,66 @@ var smartScheduleController = function(SmartSchedule){
                         previousOptimalTime.push(optimalTime);
                     }
                     previousDay = optimalTime.day ? optimalTime.day : null;
-                    // returnPost.push(newPost);
                 });
 
+
                 var response = {};
+                var day = null;
+                var minutes = null;
+                var hour = null;
                 if (isCurrentDayPeak(returnOptimalTimes[0].day, req_current_day)) {
-                    response.day = req_current_day;
+                     day = req_current_day;
                     if (isCurrentHourLessThenPeak(returnOptimalTimes[0].hour, req_current_hour)) {
-                        response.hour = returnOptimalTimes[0].hour;
-                        response.minutes = '0';
+                        hour = returnOptimalTimes[0].hour;
+                        minutes = 0;
                     } else {
-                        response.hour = returnOptimalTimes[0].hour + returnOptimalTimes[0].duration - req_current_hour;
-                        response.minutes = req_current_minute;
+                        hour = returnOptimalTimes[0].hour + returnOptimalTimes[0].duration - req_current_hour;
+                        minutes = req_current_minute;
                     }
                 } else{
-                    response.day = returnOptimalTimes[0].day;
-                    response.hour = returnOptimalTimes[0].hour;
-                    response.minutes = '0';
+                    day = returnOptimalTimes[0].day;
+                    hour = returnOptimalTimes[0].hour;
+                    minutes = 0;
                 }
+
+                var month = null;
+                var monthDay = req_current_date + Math.abs(day - req_current_day);
+
+                var nextDay = safeIncrementDay(monthDay,  req_current_month, req_current_year);
+
+
+                response.month = nextDay.month;
+                response.year = nextDay.year;
+                response.monthDay = nextDay.day;
+                response.day = day;
+                response.hour = hour;
+                response.minutes = minutes;
 
                 return response;
             } else {
                 return "not found";
             }
+    }
+
+    var safeIncrementDay = function(day,month,year){
+      response = {};
+      var numberOfDays = new Date(year, month, 0).getDate();
+      if(numberOfDays<day){
+
+          if(month<12){
+            month = month+1;
+          }else{
+            month = month-11;
+            year ++;
+          }
+          day = day - numberOfDays;
+        }
+
+        response.day = day;
+        response.year = year;
+        response.month = month;
+
+        return response;
     }
 
     var isCurrentHourLessThenPeak = function(hour,current_hour){

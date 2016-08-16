@@ -63,6 +63,7 @@ var autopostQueueController = function(AutopostQueue){
             req.autopostQueue.minutes = req.body.minutes;
         if(req.body.posted)
             req.autopostQueue.posted = req.body.posted;
+            
 
 
         req.autopostQueue.save(function(err){
