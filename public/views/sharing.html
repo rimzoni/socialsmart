@@ -66,8 +66,8 @@
         <div class="row" ng-hide="post_message">
                 <div class="alert alert-success" >
                     <h4 class="text-primary">Post "{{posts.post}}" will be posted </h4>
-                    <p ng-hide="schedule_facebook"><span class="fa fa-facebook"> on {{scheduleTimeFacebook.day}} at {{scheduleTimeFacebook.hour}}:{{scheduleTimeFacebook.minutes=='0'?'00':scheduleTimeFacebook.minutes}}</span></p>
-                    <p ng-hide="schedule_twitter"><span class="fa fa-twitter"> on {{scheduleTimeTwitter.day}} at {{scheduleTimeTwitter.hour}}:{{scheduleTimeTwitter.minutes=='0'?'00':scheduleTimeTwitter.minutes}}</span></p>
+                    <p ng-hide="schedule_facebook"><span class="fa fa-facebook"> on {{scheduleTimeFacebook.day}}, {{scheduleTimeFacebook.year}}.{{scheduleTimeFacebook.month}}.{{scheduleTimeFacebook.monthDay}} {{scheduleTimeFacebook.hour}}:{{scheduleTimeFacebook.minutes=='0'?'00':scheduleTimeFacebook.minutes}}</span></p>
+                    <p ng-hide="schedule_twitter"><span class="fa fa-twitter"> on {{scheduleTimeTwitter.day}}, {{scheduleTimeTwitter.year}}.{{scheduleTimeTwitter.month}}.{{scheduleTimeTwitter.monthDay}} {{scheduleTimeTwitter.hour}}:{{scheduleTimeTwitter.minutes=='0'?'00':scheduleTimeTwitter.minutes}}</span></p>
                 </div>
         </div>
         <div class="row">
@@ -76,7 +76,3 @@
             </div>
         </div>
     </div>
-
-
-
-
