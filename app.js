@@ -83,51 +83,57 @@ postEvent.on('newSchedulePost', schedulePostHandler);
 postEvent.on('newPost', postHandler);
 
 function schedulePostHandler(post){
-    var date = new Date();
-    var current_hour = date.getHours();
-    var current_day = date.getDay();
-    var current_minutes = date.getMinutes();
 
     if(post.twitter) {
 
-        var optimaltime = OptimalTime.find({network: 'twitter'}, null, {sort: 'day'}).exec();
-        optimaltime.then(function(optimalTimes){
+      var date = new Date(post.timeToPostTwitter);
 
-            var postTime = smartScheduleController.getPostTime(optimalTimes, current_day, current_hour, current_minutes);
+      var hour = date.getHours();
+      var day = date.getDay();
+      var monthDay = date.getDate();
+      var year = date.getFullYear();
+      var month = date.getMonth();
+      var minutes = date.getMinutes();
 
-            var autopostQueue = new AutopostQueue;
-            autopostQueue.postId = post._id;
-            autopostQueue.userId = post.userId;
-            autopostQueue.network = 'twitter';
-            autopostQueue.dayOfWeek = postTime.day;
-            autopostQueue.hour = postTime.hour;
-            autopostQueue.minutes = postTime.minutes;
+      var autopostQueue = new AutopostQueue;
+      autopostQueue.postId = post._id;
+      autopostQueue.userId = post.userId;
+      autopostQueue.network = 'twitter';
+      autopostQueue.dayOfWeek = day;
+      autopostQueue.hour = hour;
+      autopostQueue.minutes = minutes;
+      autopostQueue.year = year;
+      autopostQueue.date = monthDay;
+      autopostQueue.month = month;
+      autopostQueue.posted = false;
 
-            autopostQueue.save();
-
-            console.log(autopostQueue);
-        });
+      autopostQueue.save();
 
     }
     if(post.facebook) {
-        var optimaltime = OptimalTime.find({network: 'facebook'}, null, {sort: 'day'}).exec();
-        optimaltime.then(function (optimalTimes) {
 
-            var postTime = smartScheduleController.getPostTime(optimalTimes, current_day, current_hour, current_minutes);
+      var date = new Date(post.timeToPostFacebook);
+      var hour = date.getHours();
+      var day = date.getDay();
+      var monthDay = date.getDate();
+      var year = date.getFullYear();
+      var month = date.getMonth();
+      var minutes = date.getMinutes();
 
-            var autopostQueue = new AutopostQueue;
-            autopostQueue.postId = post._id;
-            autopostQueue.userId = post.userId;
-            autopostQueue.network = 'facebook';
-            autopostQueue.dayOfWeek = postTime.day;
-            autopostQueue.hour = postTime.hour;
-            autopostQueue.minutes = postTime.minutes;
-            autopostQueue.posted = false;
+      var autopostQueue = new AutopostQueue;
+      autopostQueue.postId = post._id;
+      autopostQueue.userId = post.userId;
+      autopostQueue.network = 'facebook';
+      autopostQueue.dayOfWeek = day;
+      autopostQueue.hour = hour;
+      autopostQueue.minutes = minutes;
+      autopostQueue.year = year;
+      autopostQueue.date = monthDay;
+      autopostQueue.month = month;
+      autopostQueue.posted = false;
 
-            autopostQueue.save();
+      autopostQueue.save();
 
-            console.log(autopostQueue);
-        });
     }
 
 }
@@ -155,13 +161,15 @@ schedule.scheduleJob('*/1 * * * *', function(){
     var date = new Date();
     var current_hour = date.getHours();
     var current_day = date.getDay();
+    var current_monthDay = date.getDate();
+    var current_year = date.getFullYear();
+    var current_month = date.getMonth();
     var current_minutes = date.getMinutes();
 
-    var autopostQueue = AutopostQueue.find({dayOfWeek: current_day, posted:false}, null, {sort: 'hour'}).exec();
+    var autopostQueue = AutopostQueue.find({year : current_year, date: current_monthDay, dayOfWeek: current_day, posted:false}, null, {sort: 'hour'}).exec();
     autopostQueue.then(function (autopostQueues) {
         if(autopostQueues){
             autopostQueues.forEach(function (element, index, array) {
-                console.log(element)
                 var autopostQueue = element.toJSON();
 
                 if(autopostQueue.hour==current_hour){
