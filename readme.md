@@ -1,6 +1,6 @@
 # Smart social sharing application
 
-Lets marketing share links on social networks wih auto post feature
+Lets marketing share links on social networks wih auto post feature to optimize likes and social reach
 
 
 ## Implemented using:
