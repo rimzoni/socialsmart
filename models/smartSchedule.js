@@ -5,6 +5,9 @@ var smartScheduleModel = new Schema({
     network             :{
         type: String
     },
+    userId         : {
+        type         : String
+    },
     current_day         : {
         type         : Number
     },
@@ -12,6 +15,12 @@ var smartScheduleModel = new Schema({
         type         : Number
     },
     current_minute        : {
+        type         : Number
+    },
+    current_date        : {
+        type         : Number
+    },
+    current_month        : {
         type         : Number
     }
 

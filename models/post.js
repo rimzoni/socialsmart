@@ -16,6 +16,12 @@ var postModel = new Schema({
     },
     autopost          : {
         type         : Boolean
+    },
+    timeToPostTwitter         : {
+        type         : String
+    },
+    timeToPostFacebook         : {
+        type         : String
     }
 });
 

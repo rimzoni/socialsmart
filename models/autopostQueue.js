@@ -20,6 +20,15 @@ var autopostQueueModel = new Schema({
     minutes          : {
         type         : Number
     },
+    date        : {
+        type         : Number
+    },
+    month        : {
+        type         : Number
+    },
+    year        : {
+        type         : Number
+    },
     posted          : {
         type         : Boolean
     }
