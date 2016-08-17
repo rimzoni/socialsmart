@@ -11,23 +11,8 @@ var autopostQueueModel = new Schema({
     network         : {
         type         : String
     },
-    dayOfWeek : {
-        type         : Number
-    },
-    hour          : {
-        type         : Number
-    },
-    minutes          : {
-        type         : Number
-    },
-    date        : {
-        type         : Number
-    },
-    month        : {
-        type         : Number
-    },
-    year        : {
-        type         : Number
+    date            :{
+        type        : Date
     },
     posted          : {
         type         : Boolean

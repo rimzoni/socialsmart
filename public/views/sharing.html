@@ -1,6 +1,7 @@
     <div class="page-header text-center">
         <h1 class="text-primary">Social Sharing</h1>
         <a href="/profile" class="btn btn-default btn-sm">Profile Page</a>
+        <a href="/postqueue" class="btn btn-default btn-sm">Post Queue</a>
         <a href="/logout" class="btn btn-default btn-sm">Logout</a>
     </div>
     <div class="row">
@@ -65,7 +66,7 @@
         </div>
         <div class="row" ng-hide="post_message">
                 <div class="alert alert-success" >
-                    <h4 class="text-primary">Post "{{posts.post}}" will be posted </h4>
+                    <h4 class="text-primary">Post id:{{posts._id}} with message "{{posts.post}}" will be posted </h4>
                     <p ng-hide="schedule_facebook"><span class="fa fa-facebook"> on {{scheduleTimeFacebook.day}}, {{scheduleTimeFacebook.year}}.{{scheduleTimeFacebook.month}}.{{scheduleTimeFacebook.monthDay}} {{scheduleTimeFacebook.hour}}:{{scheduleTimeFacebook.minutes=='0'?'00':scheduleTimeFacebook.minutes}}</span></p>
                     <p ng-hide="schedule_twitter"><span class="fa fa-twitter"> on {{scheduleTimeTwitter.day}}, {{scheduleTimeTwitter.year}}.{{scheduleTimeTwitter.month}}.{{scheduleTimeTwitter.monthDay}} {{scheduleTimeTwitter.hour}}:{{scheduleTimeTwitter.minutes=='0'?'00':scheduleTimeTwitter.minutes}}</span></p>
                 </div>

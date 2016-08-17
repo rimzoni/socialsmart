@@ -18,10 +18,10 @@ var postModel = new Schema({
         type         : Boolean
     },
     timeToPostTwitter         : {
-        type         : String
+        type         : Date
     },
     timeToPostFacebook         : {
-        type         : String
+        type         : Date
     }
 });
 

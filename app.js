@@ -88,23 +88,11 @@ function schedulePostHandler(post){
 
       var date = new Date(post.timeToPostTwitter);
 
-      var hour = date.getHours();
-      var day = date.getDay();
-      var monthDay = date.getDate();
-      var year = date.getFullYear();
-      var month = date.getMonth();
-      var minutes = date.getMinutes();
-
       var autopostQueue = new AutopostQueue;
       autopostQueue.postId = post._id;
       autopostQueue.userId = post.userId;
       autopostQueue.network = 'twitter';
-      autopostQueue.dayOfWeek = day;
-      autopostQueue.hour = hour;
-      autopostQueue.minutes = minutes;
-      autopostQueue.year = year;
-      autopostQueue.date = monthDay;
-      autopostQueue.month = month;
+      autopostQueue.date = post.timeToPostTwitter;
       autopostQueue.posted = false;
 
       autopostQueue.save();
@@ -113,23 +101,11 @@ function schedulePostHandler(post){
     if(post.facebook) {
 
       var date = new Date(post.timeToPostFacebook);
-      var hour = date.getHours();
-      var day = date.getDay();
-      var monthDay = date.getDate();
-      var year = date.getFullYear();
-      var month = date.getMonth();
-      var minutes = date.getMinutes();
-
       var autopostQueue = new AutopostQueue;
       autopostQueue.postId = post._id;
       autopostQueue.userId = post.userId;
       autopostQueue.network = 'facebook';
-      autopostQueue.dayOfWeek = day;
-      autopostQueue.hour = hour;
-      autopostQueue.minutes = minutes;
-      autopostQueue.year = year;
-      autopostQueue.date = monthDay;
-      autopostQueue.month = month;
+      autopostQueue.date = date;
       autopostQueue.posted = false;
 
       autopostQueue.save();
@@ -165,26 +141,29 @@ schedule.scheduleJob('*/1 * * * *', function(){
     var current_year = date.getFullYear();
     var current_month = date.getMonth();
     var current_minutes = date.getMinutes();
+    var start = new Date(current_year, current_month, current_monthDay , current_hour ,0 ,0,0);
+    var end = new Date(current_year, current_month, current_monthDay, 23, 59, 59, 59);
 
-    var autopostQueue = AutopostQueue.find({year : current_year, date: current_monthDay, dayOfWeek: current_day, posted:false}, null, {sort: 'hour'}).exec();
+    var autopostQueue = AutopostQueue.find({date : {"$gte": start, "$lt": end}, posted:false}, null, {sort: 'date'}).exec();
     autopostQueue.then(function (autopostQueues) {
         if(autopostQueues){
             autopostQueues.forEach(function (element, index, array) {
                 var autopostQueue = element.toJSON();
-
-                if(autopostQueue.hour==current_hour){
-                    if(autopostQueue.minutes == current_minutes){
+                if(autopostQueue.date.getHours()==current_hour ){
+                    if(autopostQueue.date.getMinutes() == current_minutes){
                         Post.findById(autopostQueue.postId, function(err, post) {
                             User.findById(post.userId, function(err, user) {
                                 if(autopostQueue.network == 'twitter'){
                                     twitterController.twitterPost(user.twitter.token,user.twitter.tokenSecret,post.post);
                                     newAutopostQueue = new AutopostQueue(autopostQueue);
                                     newAutopostQueue.posted = true;
+                                    newAutopostQueue.isNew = false;
                                     newAutopostQueue.save();
                                 }else if(autopostQueue.network == 'facebook'){
                                     facebookController.facebookPost(user.facebook.token,post.post);
                                     newAutopostQueue = new AutopostQueue(autopostQueue);
                                     newAutopostQueue.posted = true;
+                                    newAutopostQueue.isNew = false;
                                     newAutopostQueue.save();
                                 }
 

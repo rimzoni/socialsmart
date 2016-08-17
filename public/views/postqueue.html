@@ -1,0 +1,28 @@
+    <div class="page-header text-center">
+        <h1 class="text-primary">Social Sharing</h1>
+        <a href="/profile" class="btn btn-default btn-sm">Profile Page</a>
+        <a href="/sharing" class="btn btn-default btn-sm">Sharing</a>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+    <div class="row">
+      <h3> Orders </h3>
+      <table class="table">
+        <thead class="thead-inverse">
+          <tr>
+            <th>Post id</th>
+            <th>Social network</th>
+            <th>Post Date</th>
+            <th>Posted</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="post in postqueue | filter:{ userId: user._id } | orderBy:'date'">
+            <td>{{post.postId}}</td>
+            <td>{{post.network}}</td>
+            <td>{{post.date}}</td>
+            <td>{{post.posted}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>

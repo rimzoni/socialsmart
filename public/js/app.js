@@ -17,6 +17,12 @@ app.controller('mainController', function($scope, $http,$timeout) {
                  $scope.user = data;
                  $scope.loading = false;
              });
+        $scope.posts = {};
+        $http.get('/api/autopostQueue')
+             .success(function(data) {
+             $scope.postqueue = data;
+             $scope.loading = false;
+             });
 
          $scope.message_error = true;
          $scope.checkbox_error = true;
@@ -76,6 +82,7 @@ app.controller('mainController', function($scope, $http,$timeout) {
 
         if(!$scope.errors.message && !$scope.errors.checkbox){
           if($scope.twitter =='true' && $scope.autopost == 'true'){
+
               $http.post('/api/smartSchedule', {
                   network: 'twitter',
                   userId: $scope.user._id,
@@ -86,9 +93,22 @@ app.controller('mainController', function($scope, $http,$timeout) {
                   $scope.scheduleTimeTwitter.day = $scope.days[data.day];
                   $scope.schedule_times = false;
                   $scope.schedule_twitter = false;
-                  console.log(data);
-              }).error(function(data) {
-                  $scope.errors['serverError'] = data;
+                  $http.post('/api/posts', {
+                      userId: $scope.user._id,
+                      post: $scope.message,
+                      facebook: false,
+                      twitter : $scope.twitter,
+                      autopost : $scope.autopost,
+                      timeToPostTwitter : $scope.timeToPostTwitter,
+                      timeToPostFacebook : null
+                  }).success(function(data) {
+                      $scope.message = '';
+                      $scope.post_message = false;
+                      $scope.posts = data;
+
+                  }).error(function(data) {
+                          $scope.errors['serverError'] = data;
+                  });
               });
           }
           if($scope.facebook =='true' && $scope.autopost == 'true'){
@@ -100,38 +120,37 @@ app.controller('mainController', function($scope, $http,$timeout) {
                   $scope.scheduleTimeFacebook = data;
                   $scope.timeToPostFacebook = new Date(data.year,data.month,data.monthDay ,data.hour, data.minutes );
                   $scope.scheduleTimeFacebook.day = $scope.days[data.day];
-                  $scope.schedule_times = false;
+
                   $scope.schedule_facebook = false;
-                  console.log(data);
-              }).error(function(data) {
-                  $scope.errors['serverError'] = data;
+                  $scope.schedule_times = false;
+                  $http.post('/api/posts', {
+                      userId: $scope.user._id,
+                      post: $scope.message,
+                      facebook: $scope.facebook,
+                      twitter : false,
+                      autopost : $scope.autopost,
+                      timeToPostTwitter : null,
+                      timeToPostFacebook : $scope.timeToPostFacebook
+                  }).success(function(data) {
+                      $scope.message = '';
+                      $scope.post_message = false;
+                      //commented because bug
+                      // $scope.facebook = 'false';
+                      // $scope.twitter = 'false';
+                      // $scope.autopost = 'false';
+                      $scope.posts = data;
+
+                  }).error(function(data) {
+                          $scope.errors['serverError'] = data;
+                  });
               });
           }
             if($scope.twitter == 'false')
               $scope.timeToPostTwitter = '';
             if($scope.facebook == 'false')
               $scope.timeToPostFacebook = '';
-            $http.post('/api/posts', {
-                userId: $scope.user._id,
-                post: $scope.message,
-                facebook: $scope.facebook,
-                twitter : $scope.twitter,
-                autopost : $scope.autopost,
-                timeToPostTwitter : $scope.timeToPostTwitter,
-                timeToPostFacebook : $scope.timeToPostFacebook
-            }).success(function(data) {
-                $scope.message = '';
-                $scope.post_message = false;
-                //commented because bug
-                // $scope.facebook = 'false';
-                // $scope.twitter = 'false';
-                // $scope.autopost = 'false';
-                $scope.posts = data;
 
-                console.log(data);
-            }).error(function(data) {
-                    $scope.errors['serverError'] = data;
-            });
+
 
         }else{
             $timeout(function(){
@@ -154,6 +173,10 @@ app.config(['$routeProvider', '$locationProvider', function($routeProvider, $loc
         })
         .when('/profile', {
             templateUrl: '/views/profile.html',
+            controller: 'mainController',
+        })
+        .when('/postqueue', {
+            templateUrl: '/views/postqueue.html',
             controller: 'mainController',
         })
         .otherwise({
