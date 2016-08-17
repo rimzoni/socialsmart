@@ -10,7 +10,7 @@ var autopostQueueController = function(AutopostQueue){
         else{
             autopostQueue.save();
             res.status(201);
-            res.send(AutopostQueue);
+            res.send(autopostQueue);
         }
     }
 
@@ -25,8 +25,8 @@ var autopostQueueController = function(AutopostQueue){
             query.userId = req.query.userId;
         }
 
-        if(req.query.dayOfWeek){
-            query.dayOfWeek = req.query.dayOfWeek;
+        if(req.query.date){
+            query.date = req.query.date;
         }
 
         AutopostQueue.find(query,function(err,autopostQueues){
@@ -55,15 +55,11 @@ var autopostQueueController = function(AutopostQueue){
             req.autopostQueue.userId = req.body.userId;
         if(req.body.network)
             req.autopostQueue.network = req.body.network;
-        if(req.body.dayOfWeek)
-            req.autopostQueue.dayOfWeek = req.body.dayOfWeek;
-        if(req.body.hour)
-            req.autopostQueue.hour = req.body.hour;
-        if(req.body.minutes)
-            req.autopostQueue.minutes = req.body.minutes;
+        if(req.body.date)
+            req.autopostQueue.date = req.body.date;
         if(req.body.posted)
             req.autopostQueue.posted = req.body.posted;
-            
+
 
 
         req.autopostQueue.save(function(err){

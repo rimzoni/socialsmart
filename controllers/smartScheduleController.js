@@ -21,25 +21,24 @@ var smartScheduleController = function(SmartSchedule){
                 optimaltime.then(function(optimalTimes){
 
                 var response = {};
-                var autopostQueueResult =  AutopostQueue .find({userId: req.body.userId }, null).sort('-date').exec();
+                var autopostQueueResult =  AutopostQueue.find({userId: req.body.userId, network: smartSchedule.network}, null).sort({date:-1}).exec();
                 autopostQueueResult.then(function(queueResults){
-
                     if(queueResults.length>0){
                       queueResults.forEach(function (element, index, array) {
                           var queueResult = element;
-                          var day = req.body.date.getDay();
-                          var hours = req.body.date.getHours();
-                          var minutes = req.body.date.getMinutes();
-                          var month = req.body.date.getMonth();
-                          var monthDay = req.body.date.getDate();
-                          var year = req.body.date.getFullYear();
 
-                          if(queueResult.date >= monthDay && queueResult.month >= month
-                          && queueResult.year >= year){
+                          var date = req.body.date;
+                          var day = date.getDay();
+                          var hours = date.getHours();
+                          var minutes = date.getMinutes();
+                          var month = date.getMonth();
+                          var monthDay = date.getDate();
+                          var year = date.getFullYear();
 
-                            var nextMonthDay = queueResult.date + 1;
+                          if(queueResult.date>=req.body.date){
+                            var nextMonthDay = queueResult.date.getDate() + 1;
 
-                            var safeNextDay = safeIncrementDay(nextMonthDay,  queueResult.month, queueResult.year);
+                             var safeNextDay = safeIncrementDay(nextMonthDay,  queueResult.date.getMonth(), queueResult.date.getFullYear());
                              nextMonthDay = safeNextDay.day;
                              year = safeNextDay.year;
                              month = safeNextDay.month;
@@ -51,7 +50,8 @@ var smartScheduleController = function(SmartSchedule){
                             response.monthDay = newPostTime.monthDay;
                             response.day = newPostTime.day;
                             response.hour = newPostTime.hour;
-                            response.minutes = newPostTime.minutes ;
+                            response.minutes = newPostTime.minutes;
+
                             res.status(200);
                             res.send(response);
                           }else{
@@ -68,7 +68,7 @@ var smartScheduleController = function(SmartSchedule){
                             response.year = year;
 
                             response.month = month;
-                            response.date= monthDay;
+                            response.monthDay= monthDay;
                             response.day = day;
                             response.hour = hour;
                             response.minutes = minutes;
@@ -90,7 +90,7 @@ var smartScheduleController = function(SmartSchedule){
                       response.year = year;
 
                       response.month = month;
-                      response.date= monthDay;
+                      response.monthDay= monthDay;
                       response.day = day;
                       response.hour = hour;
                       response.minutes = minutes;
@@ -99,8 +99,6 @@ var smartScheduleController = function(SmartSchedule){
                       res.send(response);
 
                     }
-                    res.status(200);
-                    res.send(response);
                 });
             });
 
@@ -206,7 +204,6 @@ var smartScheduleController = function(SmartSchedule){
       response = {};
       var numberOfDays = new Date(year, month, 0).getDate();
       if(numberOfDays<day){
-
           if(month<12){
             month = month+1;
           }else{
@@ -219,7 +216,6 @@ var smartScheduleController = function(SmartSchedule){
         response.day = day;
         response.year = year;
         response.month = month;
-
         return response;
     }
 
