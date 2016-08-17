@@ -144,12 +144,13 @@ schedule.scheduleJob('*/1 * * * *', function(){
     var start = new Date(current_year, current_month, current_monthDay , current_hour ,0 ,0,0);
     var end = new Date(current_year, current_month, current_monthDay, 23, 59, 59, 59);
 
-    var autopostQueue = AutopostQueue.find({date : {"$gte": start, "$lt": end}, posted:false}, null, {sort: 'date'}).exec();
+    var autopostQueue = AutopostQueue.find({posted:false}, null, {sort: 'date'}).exec();
     autopostQueue.then(function (autopostQueues) {
         if(autopostQueues){
             autopostQueues.forEach(function (element, index, array) {
                 var autopostQueue = element.toJSON();
-                if(autopostQueue.date.getHours()==current_hour ){
+                if(autopostQueue.date.getHours()==current_hour  && autopostQueue.date.getMonth() == current_month && autopostQueue.date.getDate() == current_monthDay && autopostQueue.date.getFullYear() == current_year){
+
                     if(autopostQueue.date.getMinutes() == current_minutes){
                         Post.findById(autopostQueue.postId, function(err, post) {
                             User.findById(post.userId, function(err, user) {
